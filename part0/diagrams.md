@@ -38,3 +38,4 @@ sequenceDiagram
     participant server
     browser->>server: POST /exampleapp/new_note_spa
     server->>browser: responds "note created"
+```
