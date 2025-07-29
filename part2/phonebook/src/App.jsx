@@ -3,12 +3,15 @@ import Person from './components/Person'
 import NewPersonForm from './components/NewPersonForm'
 import Filter from './components/Filter'
 import service from './services/serverCommunication.js'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState(null)
+  const [notificationType, setNotificationType] = useState('success')
 
   const hook = () => {
     service
@@ -19,6 +22,15 @@ const App = () => {
   }
 
   useEffect(hook, [])
+
+  // sets a notification with a specified message for 5 seconds, resets to success after
+  const setNotification = (message) => {
+    setNotificationMessage(message)
+    setTimeout(() => {
+      setNotificationMessage(null),
+      setNotificationType('success')
+    }, 5000)
+  } 
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -33,8 +45,15 @@ const App = () => {
             setPersons(persons.map(person =>
               person.id !== existingPerson.id ? person : returnedPerson
             ))
+            setNotification(`Updated ${newName}`)
             setNewName('')
-          setNewNumber('')
+            setNewNumber('')
+          })
+          .catch(() => {
+            console.log('Trying to access data which was removed')
+            setNotificationType('error')
+            setNotification(`Information of ${newName} has already been deleted from the server`)
+            setPersons(persons.filter(person => person.id !== existingPerson.id))
           })
       }
       return
@@ -49,6 +68,7 @@ const App = () => {
       .create(personObject)
       .then(returnedPerson => {
         setPersons(persons.concat(returnedPerson))
+        setNotification(`Added ${newName}`)
         setNewName('')
         setNewNumber('')
       })
@@ -60,6 +80,7 @@ const App = () => {
       service.deletePerson(id)
         .then(() => {
           setPersons(persons.filter(p => p.id !== id))
+          setNotification(`Deleted ${person.name}`)
         })
     }
 }
@@ -86,6 +107,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+        <Notification message={notificationMessage} type={notificationType}/>
         filter shown with
         <Filter searchTerm={searchTerm} handleSearchChange={handleSearchChange}/>
       <h2>Add a new person</h2>
