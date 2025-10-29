@@ -1,0 +1,16 @@
+GET http://localhost:3001/api/persons/
+
+###
+DELETE http://localhost:3001/api/persons/4
+
+###
+POST http://localhost:3001/api/persons/
+Content-Type: application/json
+
+{
+    "name": "Johnson",
+    "number": "040100200"
+}
+
+###
+GET https://phonebook-backend-x8y0.onrender.com/api/persons/4
