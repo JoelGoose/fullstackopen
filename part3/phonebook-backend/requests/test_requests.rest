@@ -14,3 +14,12 @@ Content-Type: application/json
 
 ###
 GET https://phonebook-backend-x8y0.onrender.com/api/persons/4
+
+###
+PUT http://localhost:3001/api/persons/690895196f2dc76a130feb40
+Content-Type: application/json
+
+{
+    "name": "Anna",
+    "number": "4321"
+}
