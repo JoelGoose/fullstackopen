@@ -39,20 +39,3 @@ if (process.argv.length === 3) {
         mongoose.connection.close()
     })
 }
-/* Note.find({}).then(result => {
-  result.forEach(note => {
-    console.log(note)
-  })
-  mongoose.connection.close()
-})
- */
-
-/* const note = new Note({
-  content: 'HTML is easy',
-  important: true,
-})
-
-note.save().then(result => {
-  console.log('note saved!')
-  mongoose.connection.close()
-}) */
