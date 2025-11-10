@@ -72,6 +72,11 @@ const App = () => {
         setNewName('')
         setNewNumber('')
       })
+      .catch(error => {
+        console.log(error.response.data.error)
+        setNotificationType('error')
+        setNotification(error.response.data.error)
+      })
   }
 
   const handleDelete = (id) => {
