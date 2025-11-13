@@ -11,3 +11,17 @@ Content-Type: application/json
 ###
 
 GET http://localhost:3003/api/blogs/
+
+
+###
+
+DELETE http://localhost:3003/api/blogs/6915f2880ba66ca3d857700c
+
+###
+
+PUT http://localhost:3003/api/blogs/6915f40edc55d84326815208
+Content-Type: application/json
+
+{
+    "likes": 100
+}
