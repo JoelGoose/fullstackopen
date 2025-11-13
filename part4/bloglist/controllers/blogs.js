@@ -28,7 +28,7 @@ blogsRouter.put('/:id', async (request, response) => {
   const { title, author, url, likes} = request.body 
   const blogToUpdate = await Blog.findById(request.params.id)
   if (!blogToUpdate) {
-    return response.status(404).end
+    return response.status(404).end()
   }
   
   if (title != undefined) blogToUpdate.title = title
