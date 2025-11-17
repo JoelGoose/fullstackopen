@@ -4,6 +4,9 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
+const bcrypt = require('bcrypt')
+const { title } = require('node:process')
 
 const api = supertest(app)
 
@@ -31,9 +34,26 @@ const initialBlogs = [
   }
 ]
 
+
 beforeEach(async () => {
   await Blog.deleteMany({})
   await Blog.insertMany(initialBlogs)
+
+  await User.deleteMany({})
+
+  const passwordHash = await bcrypt.hash('password', 10)
+  const testUser = new User({
+    username: 'root',
+    name: 'Root User',
+    passwordHash
+  })
+  await testUser.save()
+
+  const response = await api
+    .post('/api/login')
+    .send({ username: 'root', password: 'password' })
+
+  token = response.body.token || null
 })
 
 test('blogs are returned as json', async () => {
@@ -66,6 +86,7 @@ test('a valid blog can be added ', async () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -75,6 +96,19 @@ test('a valid blog can be added ', async () => {
 
     assert.strictEqual(response.body.length, initialBlogs.length + 1)
     assert(titles.includes('Welcome to my new blog!'))
+})
+
+test('a valid blog without a token wont be added', async () => {
+  const newBlog = {
+    title: 'Welcome to my new blog!',
+    author: 'Awesomesauce1',
+    url: 'https://dictionary.cambridge.org/dictionary/english/awesomesauce',
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(401)
 })
 
 test('If likes field is missing, it defaults to 0', async () => {
@@ -87,6 +121,7 @@ test('If likes field is missing, it defaults to 0', async () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -105,24 +140,40 @@ test('an invalid blog gets the Bad Request status code', async () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(400)
       .expect('Content-Type', /application\/json/)
 })
 
 test('deleting a blog is reflected in the database', async () => {
-  const response = await api.get('/api/blogs')
-  const blogToDelete = response.body[0]
+  const blog = {
+    title: "Hello",
+    author: "me",
+    url: "wow.com"
+  }
   
   await api
+    .post('/api/blogs')      
+    .set('Authorization', `Bearer ${token}`)
+    .send(blog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+  const blogToDelete = response.body[3]
+
+  await api
     .delete(`/api/blogs/${blogToDelete.id}`)
+    .set('Authorization', `Bearer ${token}`)
     .expect(204)
 
   // new get request to confirm blog got deleted
   const newResponse = await api.get('/api/blogs')
   const ids = newResponse.body.map(blog => blog.id)
 
-  assert.strictEqual(newResponse.body.length, initialBlogs.length - 1)
+  // we delete a created blog, so initial blogs should be the same
+  assert.strictEqual(newResponse.body.length, initialBlogs.length)
   assert.strictEqual(ids.includes(`${blogToDelete.id}`), false)
 })
 
