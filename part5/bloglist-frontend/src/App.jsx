@@ -2,11 +2,14 @@ import { useState, useEffect, use } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import AddBlogForm from './components/AddBlogForm'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
+  const [notification, setNotification] = useState({ message: '', type: '' })
+  
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -30,6 +33,13 @@ const App = () => {
     }
   }, [])
 
+  const setNotificationHelper = ({ message, type }) => {
+    setNotification({message: message, type: type})
+    setTimeout(() => {
+      setNotification({message: '', type: ''})
+    }, 5000)
+  }
+
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
@@ -40,8 +50,10 @@ const App = () => {
       setUsername('')
       setPassword('')
       console.log('login successful')
+      setNotificationHelper({message: 'logged in successfully', type: 'success'})
     } catch {
       console.log('error in logging in')
+      setNotificationHelper({message: 'wrong username or password', type: 'error'})
     }
   }
 
@@ -51,6 +63,7 @@ const App = () => {
       console.log('clicked logout')
       window.localStorage.removeItem('loggedBlogappUser')
       setUser(null)
+      setNotificationHelper({message: 'logged out successfully', type: 'success'})
     } catch {
       console.log('error in logging out')
     }
@@ -60,30 +73,36 @@ const handleCreateBlog = async (event) => {
   event.preventDefault()
   try {
     const newBlog = { title, author, url }
-    const returnedBlog = await blogService.create(newBlog) // Assuming you have a create method in blogService
-    setBlogs(blogs.concat(returnedBlog)) // Update the blogs state
-    setTitle('') // Clear the input fields
+    const returnedBlog = await blogService.create(newBlog) 
+    setBlogs(blogs.concat(returnedBlog))
+    setTitle('')
     setAuthor('')
     setUrl('')
+    setNotificationHelper({message: `a new blog ${title} by ${author} added`, type: 'success'})
   } catch (error) {
     console.error('Error creating blog:', error)
+    setNotificationHelper({message: 'Error creating blog', type: 'error'})
   }
 }
 
   if (user === null) {
     return (
+      <><h2>Login</h2>
+      <Notification message={notification.message} type={notification.type}/>
       <LoginForm
         handleLogin={handleLogin}
         username={username}
         password={password}
         onUsernameChange={({ target }) => setUsername(target.value)}
         onPasswordChange={({ target }) => setPassword(target.value)} />
+      </>
     )
   }
 
   return (
     <div>
       <h2>blogs</h2>
+      <Notification message={notification.message} type={notification.type}/>
       <div style={{ display: "flex" }}>
         <div>{user.name} logged in</div>
         <button onClick={handleLogout}>Logout</button>
