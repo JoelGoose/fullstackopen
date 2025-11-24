@@ -1,5 +1,8 @@
+import { useState } from "react"
+
 const AddBlogForm = ({ title, author, url, onTitleChange, onAuthorChange, onUrlChange, handleCreateBlog }) => (
-	<><h2>Create new blog</h2>
+	<div>
+	<h2>Create new blog</h2>
 	<form onSubmit={handleCreateBlog}>
 		<div>
 			<label>
@@ -29,7 +32,8 @@ const AddBlogForm = ({ title, author, url, onTitleChange, onAuthorChange, onUrlC
 			</label>
 		</div>
 		<button type="submit">create</button>
-	</form></>
+	</form>
+	</div>
 )
 
 export default AddBlogForm
