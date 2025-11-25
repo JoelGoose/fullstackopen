@@ -10,10 +10,6 @@ import loginService from './services/login'
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [notification, setNotification] = useState({ message: '', type: '' })
-  
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -23,7 +19,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs(blogs)
+      setBlogs(blogs.sort((a,b) => b.likes - a.likes))
     )
   }, [])
 
@@ -72,20 +68,40 @@ const App = () => {
     }
   }
 
-  const handleCreateBlog = async (event) => {
-    event.preventDefault()
+  const handleCreateBlog = async (newBlog) => {
     try {
       blogFormRef.current.toggleVisibility()
-      const newBlog = { title, author, url }
       const returnedBlog = await blogService.create(newBlog) 
       setBlogs(blogs.concat(returnedBlog))
-      setTitle('')
-      setAuthor('')
-      setUrl('')
-      setNotificationHelper({message: `a new blog ${title} by ${author} added`, type: 'success'})
+      setNotificationHelper({message: `a new blog ${newBlog.title} by ${newBlog.author} added`, type: 'success'})
     } catch (error) {
       console.error('Error creating blog:', error)
       setNotificationHelper({message: 'Error creating blog', type: 'error'})
+    }
+  }
+
+  const handleLike = async (blog) => {
+    const updatedBlog = {
+      user: blog.user.id,
+      likes: blog.likes + 1,
+      author: blog.author,
+      title: blog.title,
+      url: blog.url
+    }
+    try {
+      const response = await blogService.update(blog.id, updatedBlog)
+      setBlogs(blogs.map(b => b.id === blog.id ? response : b))
+    } catch (error) {
+      console.log(error)
+      console.error('Error in liking blog')
+    }
+  }
+
+  const handleRemove = async (blog) => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+      await blogService.remove(blog.id)
+      setBlogs(blogs.filter(b => b.id !== blog.id))
+      setNotificationHelper({message: 'Successfully deleted blog', type: 'success'})
     }
   }
 
@@ -113,17 +129,11 @@ const App = () => {
       </div>
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
         <AddBlogForm 
-          title={title}
-          author={author}
-          url={url}
-          onTitleChange={({ target }) => setTitle(target.value)}
-          onAuthorChange={({ target }) => setAuthor(target.value)}
-          onUrlChange={({ target }) => setUrl(target.value)}
-          handleCreateBlog={handleCreateBlog}
+          createBlog={handleCreateBlog}
         />
       </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} onLike={handleLike} onRemove={handleRemove} user={user.username}/>
       )}
     </div>
   )
