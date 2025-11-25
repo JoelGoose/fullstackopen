@@ -33,9 +33,9 @@ const App = () => {
   }, [])
 
   const setNotificationHelper = ({ message, type }) => {
-    setNotification({message: message, type: type})
+    setNotification({ message: message, type: type })
     setTimeout(() => {
-      setNotification({message: '', type: ''})
+      setNotification({ message: '', type: '' })
     }, 5000)
   }
 
@@ -49,10 +49,10 @@ const App = () => {
       setUsername('')
       setPassword('')
       console.log('login successful')
-      setNotificationHelper({message: 'logged in successfully', type: 'success'})
+      setNotificationHelper({ message: 'logged in successfully', type: 'success' })
     } catch {
       console.log('error in logging in')
-      setNotificationHelper({message: 'wrong username or password', type: 'error'})
+      setNotificationHelper({ message: 'wrong username or password', type: 'error' })
     }
   }
 
@@ -62,7 +62,7 @@ const App = () => {
       console.log('clicked logout')
       window.localStorage.removeItem('loggedBlogappUser')
       setUser(null)
-      setNotificationHelper({message: 'logged out successfully', type: 'success'})
+      setNotificationHelper({ message: 'logged out successfully', type: 'success' })
     } catch {
       console.log('error in logging out')
     }
@@ -71,12 +71,12 @@ const App = () => {
   const handleCreateBlog = async (newBlog) => {
     try {
       blogFormRef.current.toggleVisibility()
-      const returnedBlog = await blogService.create(newBlog) 
+      const returnedBlog = await blogService.create(newBlog)
       setBlogs(blogs.concat(returnedBlog))
-      setNotificationHelper({message: `a new blog ${newBlog.title} by ${newBlog.author} added`, type: 'success'})
+      setNotificationHelper({ message: `a new blog ${newBlog.title} by ${newBlog.author} added`, type: 'success' })
     } catch (error) {
       console.error('Error creating blog:', error)
-      setNotificationHelper({message: 'Error creating blog', type: 'error'})
+      setNotificationHelper({ message: 'Error creating blog', type: 'error' })
     }
   }
 
@@ -101,20 +101,20 @@ const App = () => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
       await blogService.remove(blog.id)
       setBlogs(blogs.filter(b => b.id !== blog.id))
-      setNotificationHelper({message: 'Successfully deleted blog', type: 'success'})
+      setNotificationHelper({ message: 'Successfully deleted blog', type: 'success' })
     }
   }
 
   if (user === null) {
     return (
       <>
-      <Notification message={notification.message} type={notification.type}/>
-      <LoginForm
-        handleSubmit={handleLogin}
-        username={username}
-        password={password}
-        onUsernameChange={({ target }) => setUsername(target.value)}
-        onPasswordChange={({ target }) => setPassword(target.value)} />
+        <Notification message={notification.message} type={notification.type}/>
+        <LoginForm
+          handleSubmit={handleLogin}
+          username={username}
+          password={password}
+          onUsernameChange={({ target }) => setUsername(target.value)}
+          onPasswordChange={({ target }) => setPassword(target.value)} />
       </>
     )
   }
@@ -123,12 +123,12 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <Notification message={notification.message} type={notification.type}/>
-      <div style={{ display: "flex" }}>
+      <div style={{ display: 'flex' }}>
         <div>{user.name} logged in</div>
         <button onClick={handleLogout}>Logout</button>
       </div>
-      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-        <AddBlogForm 
+      <Togglable buttonLabel='create new blog' ref={blogFormRef}>
+        <AddBlogForm
           createBlog={handleCreateBlog}
         />
       </Togglable>
