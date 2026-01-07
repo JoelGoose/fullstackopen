@@ -1,0 +1,46 @@
+{
+  "notes": [
+    {
+      "id": 1,
+      "content": "custom-hooks are awesome!"
+    },
+    {
+      "id": 2,
+      "content": "best feature ever <3"
+    },
+    {
+      "content": "This is a test",
+      "id": 3
+    },
+    {
+      "content": "This is the second test",
+      "id": 4
+    },
+    {
+      "content": "This is the third test",
+      "id": 5
+    }
+  ],
+  "persons": [
+    {
+      "id": 1,
+      "name": "mluukkai",
+      "number": "040-5483923"
+    },
+    {
+      "id": 2,
+      "name": "hellas",
+      "number": "012-123123"
+    },
+    {
+      "name": "Test",
+      "number": "1234",
+      "id": 3
+    },
+    {
+      "name": "Tom",
+      "number": "12345",
+      "id": 4
+    }
+  ]
+}
