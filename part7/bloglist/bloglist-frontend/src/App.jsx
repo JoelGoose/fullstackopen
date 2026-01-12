@@ -17,6 +17,7 @@ import Blog from "./components/Blog";
 import NewBlog from "./components/NewBlog";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
+import Users from "./components/Users"
 
 const App = () => {
   const [user, userDispatch] = useContext(UserContext);
@@ -120,6 +121,7 @@ const App = () => {
           handleDelete={handleDelete}
         />
       ))}
+      <Users></Users>
     </div>
   );
 };
