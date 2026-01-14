@@ -12,9 +12,9 @@ router.get("/", async (request, response) => {
 });
 
 router.get("/:id", async (request, response) => {
-  const blog = await Blog.findById((request.params.id))
-  response.json(blog)
-})
+  const blog = await Blog.findById(request.params.id);
+  response.json(blog);
+});
 
 router.post("/", userExtractor, async (request, response) => {
   const blog = new Blog(request.body);
@@ -80,13 +80,16 @@ router.put("/:id", async (request, response) => {
 });
 
 router.post("/:id/comments", async (request, response) => {
-  const { comment } = request.body
+  const { comment } = request.body;
 
-  const blog = await Blog.findById(request.params.id)
-  blog.comments.push(comment)
-  const savedBlog = await blog.save()
-  const populatedBlog = await Blog.findById(savedBlog._id).populate("user", { username: 1, name: 1 })
-  response.status(201).json(populatedBlog)
-})
+  const blog = await Blog.findById(request.params.id);
+  blog.comments.push(comment);
+  const savedBlog = await blog.save();
+  const populatedBlog = await Blog.findById(savedBlog._id).populate("user", {
+    username: 1,
+    name: 1,
+  });
+  response.status(201).json(populatedBlog);
+});
 
 module.exports = router;

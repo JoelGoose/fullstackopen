@@ -18,7 +18,7 @@ import Blog from "./components/Blog";
 import NewBlog from "./components/NewBlog";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
-import Users from "./components/Users"
+import Users from "./components/Users";
 import User from "./components/User";
 import Navigation from "./components/Navigation";
 import { Route, Routes, useMatch, Link, useNavigate } from "react-router-dom";
@@ -27,13 +27,13 @@ import { getUsers } from "./reducers/usersReducer";
 const App = () => {
   const [user, userDispatch] = useContext(UserContext);
   const dispatch = useDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   useEffect(() => {
     const initializeBlogsApp = async () => {
       const blogs = await blogService.getAll();
       dispatch(getBlogs(blogs));
       const users = await userService.getAll();
-      dispatch(getUsers(users))
+      dispatch(getUsers(users));
     };
     initializeBlogsApp();
   }, []);
@@ -94,7 +94,7 @@ const App = () => {
       await blogService.remove(blog.id);
       dispatch(removeBlog(blog));
       notify(`Blog ${blog.title}, by ${blog.author} removed`);
-      navigate('/')
+      navigate("/");
     }
   };
 
@@ -132,18 +132,21 @@ const App = () => {
           </div>
         ))}
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <div>
-      <Navigation user={user} handleLogout={handleLogout}/>
+      <Navigation user={user} handleLogout={handleLogout} />
       <Notification />
       <Routes>
-        <Route path='/' element={<Blogs/>}/>
-        <Route path='/blogs/:id' element={<Blog handleDelete={handleDelete} handleVote={handleVote}/>}/>
-        <Route path='/users' element={<Users/>}/>
-        <Route path='/users/:id' element={<User/>}/>
+        <Route path="/" element={<Blogs />} />
+        <Route
+          path="/blogs/:id"
+          element={<Blog handleDelete={handleDelete} handleVote={handleVote} />}
+        />
+        <Route path="/users" element={<Users />} />
+        <Route path="/users/:id" element={<User />} />
       </Routes>
     </div>
   );

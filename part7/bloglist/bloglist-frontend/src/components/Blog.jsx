@@ -1,24 +1,22 @@
-import { useMatch } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux';
+import { useMatch } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import storage from "../services/storage";
-import { useState } from 'react';
-import { commentBlog } from '../reducers/blogsReducer';
+import { useState } from "react";
+import { commentBlog } from "../reducers/blogsReducer";
 
 const Blog = ({ handleVote, handleDelete }) => {
-  const [comment, setComment] = useState('')
-  const blogs = useSelector((state) => state.blogs)
-  const dispatch = useDispatch()
+  const [comment, setComment] = useState("");
+  const blogs = useSelector((state) => state.blogs);
+  const dispatch = useDispatch();
 
-  const match = useMatch('/blogs/:id')
-  const blog = match
-    ? blogs.find(blog => blog.id === match.params.id)
-    : null
+  const match = useMatch("/blogs/:id");
+  const blog = match ? blogs.find((blog) => blog.id === match.params.id) : null;
 
   if (!blog) {
-    return null
+    return null;
   }
-  
+
   const nameOfUser = blog.user ? blog.user.name : "anonymous";
 
   const style = {
@@ -35,39 +33,41 @@ const Blog = ({ handleVote, handleDelete }) => {
   };
 
   const handleCommentSubmit = (event) => {
-    event.preventDefault()
-    dispatch(commentBlog(blog.id, comment))
-    setComment('')
-  }
+    event.preventDefault();
+    dispatch(commentBlog(blog.id, comment));
+    setComment("");
+  };
 
   return (
     <div style={style} className="blog">
-      <h2>{blog.title} by {blog.author}</h2>
+      <h2>
+        {blog.title} by {blog.author}
+      </h2>
+      <div>
         <div>
-          <div>
-            <a href={blog.url}>{blog.url}</a>
-          </div>
-          <div>
-            likes {blog.likes}
-            <button style={{ marginLeft: 3 }} onClick={() => handleVote(blog)}>
-              like
-            </button>
-          </div>
-          <div>added by {nameOfUser}</div>
-          {canRemove && (
-            <button onClick={() => handleDelete(blog)}>remove</button>
-          )}
-          <h3>comments</h3> 
-          <form onSubmit={handleCommentSubmit}>
-            <input type="text" value={comment} onChange={handleCommentChange}/>
-            <button>add comment</button>
-          </form>
-          <ul>
-            {blog.comments.map((comment, index) => 
-              <li key={index}>{comment}</li>
-            )}
-          </ul>
+          <a href={blog.url}>{blog.url}</a>
         </div>
+        <div>
+          likes {blog.likes}
+          <button style={{ marginLeft: 3 }} onClick={() => handleVote(blog)}>
+            like
+          </button>
+        </div>
+        <div>added by {nameOfUser}</div>
+        {canRemove && (
+          <button onClick={() => handleDelete(blog)}>remove</button>
+        )}
+        <h3>comments</h3>
+        <form onSubmit={handleCommentSubmit}>
+          <input type="text" value={comment} onChange={handleCommentChange} />
+          <button>add comment</button>
+        </form>
+        <ul>
+          {blog.comments.map((comment, index) => (
+            <li key={index}>{comment}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };
