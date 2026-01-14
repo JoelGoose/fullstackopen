@@ -10,6 +10,7 @@ import {
 import UserContext from "../src/UserContext";
 
 import blogService from "./services/blogs";
+import userService from "./services/users";
 import loginService from "./services/login";
 import storage from "./services/storage";
 import Login from "./components/Login";
@@ -18,17 +19,23 @@ import NewBlog from "./components/NewBlog";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
 import Users from "./components/Users"
+import User from "./components/User";
+import Navigation from "./components/Navigation";
+import { Route, Routes, useMatch, Link, useNavigate } from "react-router-dom";
+import { getUsers } from "./reducers/usersReducer";
 
 const App = () => {
   const [user, userDispatch] = useContext(UserContext);
   const dispatch = useDispatch();
-
+  const navigate = useNavigate()
   useEffect(() => {
-    const initializeBlogs = async () => {
+    const initializeBlogsApp = async () => {
       const blogs = await blogService.getAll();
       dispatch(getBlogs(blogs));
+      const users = await userService.getAll();
+      dispatch(getUsers(users))
     };
-    initializeBlogs();
+    initializeBlogsApp();
   }, []);
 
   useEffect(() => {
@@ -87,6 +94,7 @@ const App = () => {
       await blogService.remove(blog.id);
       dispatch(removeBlog(blog));
       notify(`Blog ${blog.title}, by ${blog.author} removed`);
+      navigate('/')
     }
   };
 
@@ -102,26 +110,41 @@ const App = () => {
 
   const byLikes = (a, b) => b.likes - a.likes;
 
+  const Blogs = () => {
+    const style = {
+      border: "solid",
+      padding: 10,
+      borderWidth: 1,
+      marginBottom: 5,
+    };
+
+    return (
+      <div>
+        <h2>blogs</h2>
+        <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+          <NewBlog doCreate={handleCreate} />
+        </Togglable>
+        {blogs.toSorted(byLikes).map((blog) => (
+          <div key={blog.id} style={style}>
+            <Link to={`/blogs/${blog.id}`}>
+              {blog.title} {blog.author}
+            </Link>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div>
-      <h2>blogs</h2>
+      <Navigation user={user} handleLogout={handleLogout}/>
       <Notification />
-      <div>
-        {user.name} logged in
-        <button onClick={handleLogout}>logout</button>
-      </div>
-      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-        <NewBlog doCreate={handleCreate} />
-      </Togglable>
-      {blogs.toSorted(byLikes).map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleVote={handleVote}
-          handleDelete={handleDelete}
-        />
-      ))}
-      <Users></Users>
+      <Routes>
+        <Route path='/' element={<Blogs/>}/>
+        <Route path='/blogs/:id' element={<Blog handleDelete={handleDelete} handleVote={handleVote}/>}/>
+        <Route path='/users' element={<Users/>}/>
+        <Route path='/users/:id' element={<User/>}/>
+      </Routes>
     </div>
   );
 };

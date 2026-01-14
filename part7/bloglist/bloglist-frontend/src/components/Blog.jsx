@@ -1,16 +1,25 @@
-import React, { useState } from "react";
+import { useMatch } from 'react-router-dom'
+import { useSelector } from 'react-redux';
 import PropTypes from "prop-types";
 import storage from "../services/storage";
 
-const Blog = ({ blog, handleVote, handleDelete }) => {
-  const [visible, setVisible] = useState(false);
+const Blog = ({ handleVote, handleDelete }) => {
+  
+  const blogs = useSelector((state) => state.blogs)
 
+  const match = useMatch('/blogs/:id')
+  const blog = match
+    ? blogs.find(blog => blog.id === match.params.id)
+    : null
+
+  if (!blog) {
+    return null
+  }
+  
   const nameOfUser = blog.user ? blog.user.name : "anonymous";
 
   const style = {
-    border: "solid",
     padding: 10,
-    borderWidth: 1,
     marginBottom: 5,
   };
 
@@ -20,11 +29,7 @@ const Blog = ({ blog, handleVote, handleDelete }) => {
 
   return (
     <div style={style} className="blog">
-      {blog.title} by {blog.author}
-      <button style={{ marginLeft: 3 }} onClick={() => setVisible(!visible)}>
-        {visible ? "hide" : "view"}
-      </button>
-      {visible && (
+      <h2>{blog.title} by {blog.author}</h2>
         <div>
           <div>
             <a href={blog.url}>{blog.url}</a>
@@ -35,23 +40,17 @@ const Blog = ({ blog, handleVote, handleDelete }) => {
               like
             </button>
           </div>
-          <div>{nameOfUser}</div>
+          <div>added by {nameOfUser}</div>
           {canRemove && (
             <button onClick={() => handleDelete(blog)}>remove</button>
           )}
+          <h3>comments</h3>
         </div>
-      )}
     </div>
   );
 };
 
 Blog.propTypes = {
-  blog: PropTypes.shape({
-    url: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    likes: PropTypes.number.isRequired,
-    user: PropTypes.object,
-  }).isRequired,
   handleVote: PropTypes.func.isRequired,
   handleDelete: PropTypes.func.isRequired,
 };

@@ -1,11 +1,10 @@
-import userService from '../services/users'
+import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
-const users = await userService.getAll()
-
-const byAmount = (a, b) => b.blogs.length - a.blogs.length;
-
-// TODO: CREATE DIFFERENT VIEWS
 const Users = () => {
+	const users = useSelector((state) => state.users)
+	const byAmount = (a, b) => b.blogs.length - a.blogs.length;
+	console.log(users)
 	return (
 		<>
 		<h2>Users</h2>
@@ -19,7 +18,7 @@ const Users = () => {
 			<tbody>
 				{users.toSorted(byAmount).map(user => (
 					<tr key={user.id}>
-						<td>{user.username}</td>
+						<td><Link to={`/users/${user.id}`}>{user.username}</Link></td>
 						<td>{user.blogs.length}</td>
 					</tr>
 				))}

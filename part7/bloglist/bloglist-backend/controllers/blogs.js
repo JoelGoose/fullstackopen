@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const router = require("express").Router();
 const Blog = require("../models/blog");
 const User = require("../models/user");
+const { response } = require("express");
 const userExtractor = require("../utils/middleware").userExtractor;
 
 router.get("/", async (request, response) => {
@@ -9,6 +10,11 @@ router.get("/", async (request, response) => {
 
   response.json(blogs);
 });
+
+router.get("/:id", async (request, response) => {
+  const blog = await Blog.findById((request.params.id))
+  response.json(blog)
+})
 
 router.post("/", userExtractor, async (request, response) => {
   const blog = new Blog(request.body);
