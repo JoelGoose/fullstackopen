@@ -1,11 +1,14 @@
 import { useMatch } from 'react-router-dom'
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from "prop-types";
 import storage from "../services/storage";
+import { useState } from 'react';
+import { commentBlog } from '../reducers/blogsReducer';
 
 const Blog = ({ handleVote, handleDelete }) => {
-  
+  const [comment, setComment] = useState('')
   const blogs = useSelector((state) => state.blogs)
+  const dispatch = useDispatch()
 
   const match = useMatch('/blogs/:id')
   const blog = match
@@ -25,7 +28,17 @@ const Blog = ({ handleVote, handleDelete }) => {
 
   const canRemove = blog.user ? blog.user.username === storage.me() : true;
 
-  console.log(blog.user, storage.me(), canRemove);
+  // console.log(blog.user, storage.me(), canRemove);
+
+  const handleCommentChange = (event) => {
+    setComment(event.target.value);
+  };
+
+  const handleCommentSubmit = (event) => {
+    event.preventDefault()
+    dispatch(commentBlog(blog.id, comment))
+    setComment('')
+  }
 
   return (
     <div style={style} className="blog">
@@ -44,7 +57,16 @@ const Blog = ({ handleVote, handleDelete }) => {
           {canRemove && (
             <button onClick={() => handleDelete(blog)}>remove</button>
           )}
-          <h3>comments</h3>
+          <h3>comments</h3> 
+          <form onSubmit={handleCommentSubmit}>
+            <input type="text" value={comment} onChange={handleCommentChange}/>
+            <button>add comment</button>
+          </form>
+          <ul>
+            {blog.comments.map((comment, index) => 
+              <li key={index}>{comment}</li>
+            )}
+          </ul>
         </div>
     </div>
   );

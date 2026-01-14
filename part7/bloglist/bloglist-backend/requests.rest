@@ -16,3 +16,17 @@ Content-Type: application/json
     "username": "Test",
     "password": "password"
 }
+
+
+###
+
+GET http://localhost:3003/api/blogs
+
+###
+
+POST http://localhost:3003/api/blogs/695e819fd88868cb4d0e6c4a/comments
+Content-Type: application/json
+
+{
+    "comment": "This blog rocks!!!!"
+}
