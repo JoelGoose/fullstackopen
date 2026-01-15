@@ -1,4 +1,4 @@
-import { useState, useEffect, createRef, useContext } from "react";
+import { useEffect, createRef, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotification } from "./reducers/notificationReducer";
 import {
@@ -23,6 +23,17 @@ import User from "./components/User";
 import Navigation from "./components/Navigation";
 import { Route, Routes, useMatch, Link, useNavigate } from "react-router-dom";
 import { getUsers } from "./reducers/usersReducer";
+
+import styled from "styled-components";
+import image from "./assets/image.png";
+
+const Page = styled.div`
+  background: url(${image}) no-repeat center center fixed;
+  background-size: cover;
+`;
+const Header = styled.h2`
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+`;
 
 const App = () => {
   const [user, userDispatch] = useContext(UserContext);
@@ -101,7 +112,9 @@ const App = () => {
   if (!user) {
     return (
       <div>
-        <h2>blogs</h2>
+        <Header>
+          <h2>blogs</h2>
+        </Header>
         <Notification />
         <Login doLogin={handleLogin} />
       </div>
@@ -120,7 +133,7 @@ const App = () => {
 
     return (
       <div>
-        <h2>blogs</h2>
+        <Header>blogs</Header>
         <Togglable buttonLabel="create new blog" ref={blogFormRef}>
           <NewBlog doCreate={handleCreate} />
         </Togglable>
@@ -136,7 +149,7 @@ const App = () => {
   };
 
   return (
-    <div>
+    <Page>
       <Navigation user={user} handleLogout={handleLogout} />
       <Notification />
       <Routes>
@@ -148,7 +161,7 @@ const App = () => {
         <Route path="/users" element={<Users />} />
         <Route path="/users/:id" element={<User />} />
       </Routes>
-    </div>
+    </Page>
   );
 };
 

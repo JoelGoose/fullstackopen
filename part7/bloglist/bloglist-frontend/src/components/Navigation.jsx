@@ -1,23 +1,35 @@
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+import styled from "styled-components";
+import gifFile from "../assets/jack-hammer-construction-worker.gif";
+
+const Gif = styled.img.attrs({
+  src: gifFile,
+  alt: "construction worker",
+})`
+  height: 25px;
+`;
+
+const NavigationBar = styled.div`
+  background-color: yellow;
+  border-style: dashed;
+`;
 
 const Navigation = ({ user, handleLogout }) => {
-  const style = {
-    backgroundColor: "lightgray",
-    padding: 3,
-  };
   return (
-    <div style={style}>
-      <Link style={style} to="/">
+    <NavigationBar>
+      <Link style={{ padding: 3 }} to="/">
         blogs
       </Link>
-      <Link style={style} to="/users">
+      <Link style={{ padding: 3 }} to="/users">
         users
       </Link>
       {user.name} logged in
-      <button style={{ marginLeft: 5 }} onClick={handleLogout}>
+      <button style={{ margin: 5 }} onClick={handleLogout}>
         logout
       </button>
-    </div>
+      (this is a construction zone)
+      <Gif />
+    </NavigationBar>
   );
 };
 

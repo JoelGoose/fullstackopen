@@ -1,5 +1,10 @@
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import styled from "styled-components";
+
+const Header = styled.h2`
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+`;
 
 const Users = () => {
   const users = useSelector((state) => state.users);
@@ -7,7 +12,7 @@ const Users = () => {
   console.log(users);
   return (
     <>
-      <h2>Users</h2>
+      <Header>Users</Header>
       <table>
         <thead>
           <tr>
