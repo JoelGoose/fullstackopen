@@ -2,12 +2,18 @@ const jwt = require("jsonwebtoken");
 const router = require("express").Router();
 const Blog = require("../models/blog");
 const User = require("../models/user");
+const { response } = require("express");
 const userExtractor = require("../utils/middleware").userExtractor;
 
 router.get("/", async (request, response) => {
   const blogs = await Blog.find({}).populate("user", { username: 1, name: 1 });
 
   response.json(blogs);
+});
+
+router.get("/:id", async (request, response) => {
+  const blog = await Blog.findById(request.params.id);
+  response.json(blog);
 });
 
 router.post("/", userExtractor, async (request, response) => {
@@ -71,6 +77,19 @@ router.put("/:id", async (request, response) => {
     new: true,
   }).populate("user", { username: 1, name: 1 });
   response.json(updatedBlog);
+});
+
+router.post("/:id/comments", async (request, response) => {
+  const { comment } = request.body;
+
+  const blog = await Blog.findById(request.params.id);
+  blog.comments.push(comment);
+  const savedBlog = await blog.save();
+  const populatedBlog = await Blog.findById(savedBlog._id).populate("user", {
+    username: 1,
+    name: 1,
+  });
+  response.status(201).json(populatedBlog);
 });
 
 module.exports = router;

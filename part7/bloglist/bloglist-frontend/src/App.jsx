@@ -1,4 +1,4 @@
-import { useState, useEffect, createRef, useContext } from "react";
+import { useEffect, createRef, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotification } from "./reducers/notificationReducer";
 import {
@@ -10,6 +10,7 @@ import {
 import UserContext from "../src/UserContext";
 
 import blogService from "./services/blogs";
+import userService from "./services/users";
 import loginService from "./services/login";
 import storage from "./services/storage";
 import Login from "./components/Login";
@@ -17,18 +18,35 @@ import Blog from "./components/Blog";
 import NewBlog from "./components/NewBlog";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
-import Users from "./components/Users"
+import Users from "./components/Users";
+import User from "./components/User";
+import Navigation from "./components/Navigation";
+import { Route, Routes, useMatch, Link, useNavigate } from "react-router-dom";
+import { getUsers } from "./reducers/usersReducer";
+
+import styled from "styled-components";
+import image from "./assets/image.png";
+
+const Page = styled.div`
+  background: url(${image}) no-repeat center center fixed;
+  background-size: cover;
+`;
+const Header = styled.h2`
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+`;
 
 const App = () => {
   const [user, userDispatch] = useContext(UserContext);
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   useEffect(() => {
-    const initializeBlogs = async () => {
+    const initializeBlogsApp = async () => {
       const blogs = await blogService.getAll();
       dispatch(getBlogs(blogs));
+      const users = await userService.getAll();
+      dispatch(getUsers(users));
     };
-    initializeBlogs();
+    initializeBlogsApp();
   }, []);
 
   useEffect(() => {
@@ -87,13 +105,16 @@ const App = () => {
       await blogService.remove(blog.id);
       dispatch(removeBlog(blog));
       notify(`Blog ${blog.title}, by ${blog.author} removed`);
+      navigate("/");
     }
   };
 
   if (!user) {
     return (
       <div>
-        <h2>blogs</h2>
+        <Header>
+          <h2>blogs</h2>
+        </Header>
         <Notification />
         <Login doLogin={handleLogin} />
       </div>
@@ -102,27 +123,45 @@ const App = () => {
 
   const byLikes = (a, b) => b.likes - a.likes;
 
-  return (
-    <div>
-      <h2>blogs</h2>
-      <Notification />
+  const Blogs = () => {
+    const style = {
+      border: "solid",
+      padding: 10,
+      borderWidth: 1,
+      marginBottom: 5,
+    };
+
+    return (
       <div>
-        {user.name} logged in
-        <button onClick={handleLogout}>logout</button>
+        <Header>blogs</Header>
+        <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+          <NewBlog doCreate={handleCreate} />
+        </Togglable>
+        {blogs.toSorted(byLikes).map((blog) => (
+          <div key={blog.id} style={style}>
+            <Link to={`/blogs/${blog.id}`}>
+              {blog.title} {blog.author}
+            </Link>
+          </div>
+        ))}
       </div>
-      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-        <NewBlog doCreate={handleCreate} />
-      </Togglable>
-      {blogs.toSorted(byLikes).map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleVote={handleVote}
-          handleDelete={handleDelete}
+    );
+  };
+
+  return (
+    <Page>
+      <Navigation user={user} handleLogout={handleLogout} />
+      <Notification />
+      <Routes>
+        <Route path="/" element={<Blogs />} />
+        <Route
+          path="/blogs/:id"
+          element={<Blog handleDelete={handleDelete} handleVote={handleVote} />}
         />
-      ))}
-      <Users></Users>
-    </div>
+        <Route path="/users" element={<Users />} />
+        <Route path="/users/:id" element={<User />} />
+      </Routes>
+    </Page>
   );
 };
 
