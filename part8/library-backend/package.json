@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "@apollo/server": "^5.2.0",
+    "graphql": "^16.12.0"
+  },
+  "name": "library-backend",
+  "version": "1.0.0",
+  "main": "library-backend.js",
+  "devDependencies": {},
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
