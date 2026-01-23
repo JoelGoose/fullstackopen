@@ -148,20 +148,17 @@ const resolvers = {
       const book = { ...args, id: uuid() }
       books = books.concat(book)
       if (!authors.find(author => author.name === args.author)) {
-        const author = { name: args.author }
+        const author = { name: args.author, id: uuid() }
         authors = authors.concat(author)
       }
       return book
     },
     editAuthor: (root, args) => {
       const author = authors.find(author => author.name === args.name)
-      console.log(author)
       if (!author) {
         return null
       }
-
       const updatedAuthor = { ...author, born: args.setBornTo }
-      console.log(updatedAuthor)
       authors = authors.map(author => author.name === args.name ? updatedAuthor : author)
       return updatedAuthor
     }
