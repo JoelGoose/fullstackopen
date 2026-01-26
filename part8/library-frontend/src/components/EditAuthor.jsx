@@ -3,7 +3,8 @@ import { useMutation } from "@apollo/client/react";
 import { ALL_AUTHORS, EDIT_AUTHOR } from "../queries";
 
 const EditAuthor = ({ authors }) => {
-  const [name, setName] = useState("");
+  // When initially loading the page, this will make sure that the first item of the authors list is selected
+  const [name, setName] = useState(authors[0].name);
   const [born, setBorn] = useState("");
 
   const [changeYear] = useMutation(EDIT_AUTHOR, {
@@ -16,8 +17,8 @@ const EditAuthor = ({ authors }) => {
     changeYear({
       variables: { name, born: parseInt(born) },
     });
-
-    setName("");
+    // select defaults to first item of the list, this makes the choice viable
+    setName(authors[0].name);
     setBorn("");
   };
 
