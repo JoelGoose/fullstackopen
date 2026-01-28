@@ -12,11 +12,11 @@ const resolvers = {
     authorCount: async () => Author.collection.countDocuments(),
     allBooks: async (root, args) => {
 			if (args.genre) {
-				const books = await Book.find({ genres: args.genre})
+				const books = await Book.find({ genres: args.genre }).populate('author')
 				return books
 			}
 			else
-				return Book.find({})
+				return Book.find({}).populate('author')
     },
     allAuthors: async () => Author.find({}),
 		me: (root, args, context) => {
@@ -24,9 +24,7 @@ const resolvers = {
 		}
   },
   Author: {
-    bookCount: (root) => { // NOT WORKING
-      // return books.filter(book => book.author === root.name).length
-    }
+    bookCount: async (root) => Book.countDocuments({ author: root._id })
   },
   Mutation: {
     addBook: async (root, args, context) => {
