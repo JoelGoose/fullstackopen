@@ -18,6 +18,10 @@ const resolvers = {
 			else
 				return Book.find({}).populate('author')
     },
+		allGenres: async () => {
+			const genres = await Book.find({}).distinct('genres')
+			return genres
+		}, 
     allAuthors: async () => Author.find({}),
 		me: (root, args, context) => {
 			return context.currentUser
